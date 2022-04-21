@@ -7,20 +7,17 @@ class AccountRepository:
         print("AccountRepository")
 
     def add_user(self, user: User):
-        # return self.account_dao.add_user(user)
-        return "user added"
-
+        return self.account_dao.add_user(user)
+        # return "user added"
 
     def get_users(self):
-        # return self.account_dao.get_all()
-        return "user getted"
+        return self.account_dao.get_all()
+        # return "user getted"
 
     def get_user_by_id(self, user_id):
-        # return self.account_dao.get_user(user_id)
-        return "user getted by id"
+        return self.account_dao.get_user(user_id)
+        # return "user getted by id"
 
     def delete_user(self, user_id):
-        # return self.account_dao.delete_user(user_id)
-        return "user deleted"
-
-
+        return self.account_dao.delete_user(user_id)
+        # return "user deleted"

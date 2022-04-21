@@ -2,10 +2,10 @@ import re
 from sqlalchemy.orm import validates
 from fastapi import status, HTTPException
 
-# from database import SessionLocal
+from database import SessionLocal
 from models.account_model import User
 
-# db = SessionLocal()
+db = SessionLocal()
 
 
 @validates('email')

@@ -21,11 +21,11 @@ db = config['postgresql']['db']
 # app.add_middleware(DBSessionMiddleware,
 #                    db_url='postgresql://' + user + ':' + passwd + '@' + host + ':' + port + '/' + db)
 
-# engine = create_engine('postgresql://' + user + ':' + passwd + '@' + host + ':' + port + '/' + db,
-#                        echo=True
-#                        )
+engine = create_engine('postgresql://' + user + ':' + passwd + '@' + host + ':' + port + '/' + db,
+                       echo=True
+                       )
 
 Base = declarative_base()
-#
-# SessionLocal = sessionmaker(bind=engine)
+
+SessionLocal = sessionmaker(bind=engine)
 

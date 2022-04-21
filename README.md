@@ -7,7 +7,7 @@ python create_db.py
 
 ## Run API
 ```bash
-python main.py
+python main.pyCancel changes
 ```
 
 ## Run message consumer
@@ -16,4 +16,4 @@ python consumer.py
 ```
 
 ### Branch database_queue - using database and rabbitMQ
-### Branch master - commited database connection and no rabbitMQ
+### Branch master - no database connection and no rabbitMQ

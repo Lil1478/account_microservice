@@ -31,7 +31,12 @@ async def get_users():
 
 @router.get("/{user_id}")
 async def get_user(user_id: int):
-    return account_repository.get_user_by_id(user_id)
+    return {'id': 1,
+            'first_name': "first name",
+            'last_name': "second name",
+            'email': "email",
+            'password': "password"}
+    # return account_repository.get_user_by_id(user_id)
 
 
 @router.put("/{user_id}")
@@ -42,4 +47,3 @@ def update_user(user_id: int, new_user: User):
 @router.delete("/{user_id}")
 async def delete_user(user_id: int):
     return account_repository.delete_user(user_id)
-

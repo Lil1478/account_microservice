@@ -2,45 +2,32 @@ import re
 from sqlalchemy.orm import validates
 from fastapi import status, HTTPException
 
-# from database import SessionLocal
+from database import SessionLocal
 from models.account_model import User
 
-# db = SessionLocal()
-
-
-@validates('email')
-def validate_email(email):
-    users = User.query.all()
-    for user in users:
-        if user.to_json()['email'] == str(email):
-            raise AttributeError('Used email')
-    if not email:
-        raise AttributeError('No email provided')
-    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-        raise AssertionError('Provided email is not an email address')
-    return email
+db = SessionLocal()
 
 
 class AccountDAO:
     def __init__(self, ):
-        self.collection_name = "Users"
+        self.collection_name = "users"
 
     def get_all(self):
         users = db.query(User).all()
         return users
 
     def add_user(self, user: User):
-        user = User(user.first_name, user.last_name, user.email, user.password)
+        user = User(user.first_name, user.last_name, user.username, user.password)
         db.add(user)
         db.commit()
-        return self.get_user_by_email(user.email)
+        return self.get_user_by_email(user.username)
 
     def get_user(self, user_id):
         user_db = db.query(User).filter(User.user_id == user_id).first()
         return user_db
 
-    def get_user_by_email(self, email):
-        user_db = db.query(User).filter(User.email == email).first()
+    def get_user_by_email(self, username):
+        user_db = db.query(User).filter(User.username == username).first()
         return user_db
 
     def delete_user(self, user_id):
@@ -50,3 +37,11 @@ class AccountDAO:
         db.delete(user_db)
         db.commit()
         return "SUCCESS"
+
+    def update_user(self, user_id, new_user:User):
+        db_user = db.query(User).filter(User.user_id == user_id).first()
+        db_user.first_name = new_user.first_name
+        db_user.last_name = new_user.last_name
+        db_user.username = new_user.username
+        # db_user.password = new_user.password
+        return self.get_user(user_id)

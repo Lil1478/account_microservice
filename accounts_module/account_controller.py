@@ -1,6 +1,7 @@
 from datetime import timedelta
+from urllib import request
 
-from fastapi import Depends, APIRouter, HTTPException, status
+from fastapi import Depends, APIRouter, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from accounts_module.account_dao import AccountDAO
@@ -15,11 +16,6 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# class AccountControllers:
-#     def __init__(self, repository):
-#         self.repository = repository
-#         print('AccountControllers')
-
 account_dao = AccountDAO()
 account_repository = AccountRepository(account_dao)
 
@@ -30,7 +26,8 @@ def add_user(new_user: User):
     if result == "NO_EMAIL":
         raise HTTPException(status_code=400, detail="Incorrect email")
     if result == "USER_EXISTS":
-        raise HTTPException(status_code=400, detail="User with this username is already exist")
+        raise HTTPException(
+            status_code=400, detail="User with this username is already exist")
     return result
 
 
@@ -47,26 +44,27 @@ def authorizate_user(auth_user: User):
         data={"sub": auth_user.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
-    return result
 
 
 @router.get("/")
-async def get_users():
+async def get_users(current_user: User = Depends(get_current_active_user)):
     return account_repository.get_users()
 
 
+@router.patch("/password")
+async def get_users(request: Request, current_user: User = Depends(get_current_active_user)):
+    body = await request.json()
+    password = body['password']
+    return account_repository.change_password(current_user, password)
+
+
 @router.get("/current")
-async def read_current_user(current_user: User = Depends(get_current_active_user)):
+async def read_current_user(req: Request, current_user: User = Depends(get_current_active_user)):
     return current_user
 
 
 @router.get("/{user_id}")
-async def get_user(user_id: int):
-    # return {'id': 1,
-    #         'first_name': "first name",
-    #         'last_name': "second name",
-    #         'email': "email",
-    #         'password': "password"}
+async def get_user(user_id: int, current_user: User = Depends(get_current_active_user)):
     return account_repository.get_user_by_id(user_id)
 
 
@@ -83,7 +81,7 @@ def update_user(user_id: int, new_user: User, current_user: User = Depends(get_c
 
 
 @router.delete("/{user_id}")
-async def delete_user(user_id: int):
+async def delete_user(user_id: int, current_user: User = Depends(get_current_active_user)):
     return account_repository.delete_user(user_id)
 
 

@@ -5,14 +5,10 @@ from helpers.token_helpers import ALGORITHM, SECRET_KEY
 from models.account_model import User
 from passlib.context import CryptContext
 
-from datetime import datetime, timedelta
-from typing import Optional
-
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from pydantic import BaseModel
 
 from models.token_model import TokenData
 
@@ -28,6 +24,9 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
+
+def check_len_password(password):
+    return len(password)>=6
 
 def validate_email(username):
     if not re.match(r"[^@]+@[^@]+\.[^@]+", username):
@@ -56,14 +55,20 @@ class AccountRepository:
         user_db = self.account_dao.get_user_by_email(user.username)
         if user_db is not None:
             return "USER_EXISTS"
+        if not check_len_password(user.password):
+            return "PASSWORD_TOO_SHORT"
         hash_password = get_password_hash(user.password)
         user.password = hash_password
         return self.account_dao.add_user(user)
-        # return "user added"
 
     def get_users(self):
         return self.account_dao.get_all()
-        # return "user getted"
+
+    def change_password(self, current_user: User, password):
+        if not check_len_password(password):
+            return "PASSWORD_TOO_SHORT"
+        hash_password = get_password_hash(password)
+        return self.account_dao.change_password(current_user.user_id, hash_password)
 
     def update_user(self, user_id, new_user: User, current_user: User):
         db_user = self.account_dao.get_user(user_id)
@@ -73,19 +78,15 @@ class AccountRepository:
         if current_user.user_id == db_user.user_id:
             return "ACCESS_TOKEN_REQUIRED"
         return result
-        # return "user getted"
 
     def get_user_by_id(self, user_id):
         return self.account_dao.get_user(user_id)
-        # return "user getted by id"
 
     def get_user_by_email(self, username):
         return self.account_dao.get_user_by_email(username)
-        # return "user getted by id"
 
     def delete_user(self, user_id):
         return self.account_dao.delete_user(user_id)
-        # return "user deleted"
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)):

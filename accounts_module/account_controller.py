@@ -20,7 +20,7 @@ account_dao = AccountDAO()
 account_repository = AccountRepository(account_dao)
 
 
-@router.post("/")
+@router.post("")
 def add_user(new_user: User):
     result = account_repository.add_user(new_user)
     if result == "NO_EMAIL":
@@ -46,7 +46,7 @@ def authorizate_user(auth_user: User):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/")
+@router.get("")
 async def get_users(current_user: User = Depends(get_current_active_user)):
     return account_repository.get_users()
 

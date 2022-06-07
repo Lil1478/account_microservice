@@ -7,7 +7,7 @@ from models.account_model import User
 
 SECRET_KEY = "ffbd262d207c97f5e80502c183fa2efbc5109494031d80b890c44748d1be2391"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 480
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
